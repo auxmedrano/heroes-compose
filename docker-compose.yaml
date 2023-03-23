@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  nginx:
+    container_name: nginxproxy
+    restart: always
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - heroweb
+      - heroesapi
+
+  heroweb:
+    container_name: heroweb
+    build: ./heroes-web
+    ports:
+      - 4200:4200
+      
+  heroesapi:
+    container_name: heroesapi
+    build: ./heroes-service
+    ports:
+      - 4000:4000
+    environment:
+      - POSTGRES_HOST=mypostgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=heroesdb
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: mypostgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=heroesdb
